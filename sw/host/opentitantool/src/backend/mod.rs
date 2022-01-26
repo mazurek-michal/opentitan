@@ -16,6 +16,7 @@ pub mod cw310;
 pub mod hyperdebug;
 pub mod ultradebug;
 pub mod verilator;
+pub mod ti50;
 
 #[derive(Debug, StructOpt)]
 pub struct BackendOpts {
@@ -30,6 +31,9 @@ pub struct BackendOpts {
     usb_pid: Option<u16>,
     #[structopt(long, help = "USB serial number of the interface")]
     usb_serial: Option<String>,
+
+    #[structopt(long, help = "Instance ID of the control interface")]
+    instance_id: Option<String>,
 
     #[structopt(flatten)]
     verilator_opts: verilator::VerilatorOpts,
@@ -49,6 +53,7 @@ pub fn create(args: &BackendOpts) -> Result<TransportWrapper> {
     let mut env = TransportWrapper::new(match args.interface.as_str() {
         "" => create_empty_transport(),
         "verilator" => verilator::create(&args.verilator_opts),
+        "ti50" => ti50::create(args),
         "ultradebug" => ultradebug::create(args),
         "hyperdebug" => hyperdebug::create(args),
         "cw310" => cw310::create(args),

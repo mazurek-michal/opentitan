@@ -14,11 +14,13 @@ use crate::io::gpio::GpioPin;
 use crate::io::i2c::Bus;
 use crate::io::spi::Target;
 use crate::io::uart::Uart;
+use crate::io::emulator::Emulator;
 
 pub mod cw310;
 pub mod hyperdebug;
 pub mod ultradebug;
 pub mod verilator;
+pub mod ti50;
 
 bitflags! {
     /// A bitmap of capabilities which may be provided by a transport.
@@ -28,6 +30,7 @@ bitflags! {
         const SPI = 0x00000002;
         const GPIO = 0x00000004;
         const I2C = 0x00000008;
+        const EMU = 0x00000010;
     }
 }
 
@@ -99,6 +102,12 @@ pub trait Transport {
     fn gpio_pin(&self, _instance: &str) -> Result<Rc<dyn GpioPin>> {
         unimplemented!();
     }
+
+    /// Returns a [`Emulator`] implementation.
+    fn emulator(&self) -> Result<Rc<dyn Emulator>> {
+        unimplemented!();
+    }
+
     /// Invoke non-standard functionality of some Transport implementations.
     fn dispatch(&self, _action: &dyn Any) -> Result<Option<Box<dyn Serialize>>> {
         Err(TransportError::UnsupportedOperation.into())
