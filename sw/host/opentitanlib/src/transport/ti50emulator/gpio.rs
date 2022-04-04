@@ -8,6 +8,8 @@ use crate::transport::{Result, TransportError};
 
 pub struct Ti50GpioPin {}
 
+// FIXME: remove 'dead_code' after implementing GPIO
+#[allow(dead_code)]
 impl Ti50GpioPin {
     pub fn open(_emulator: &Ti50Emulator, _pinname: &str) -> Result<Self> {
         Err(TransportError::UnsupportedOperation.into())

@@ -8,6 +8,8 @@ use crate::transport::{Result, TransportError};
 
 pub struct Ti50I2c {}
 
+// FIXME: remove 'dead_code' after implementing I2C
+#[allow(dead_code)]
 impl Ti50I2c {
     pub fn open(_emulator: &Ti50Emulator, _instance: &str) -> Result<Self> {
         Err(TransportError::UnsupportedOperation.into())

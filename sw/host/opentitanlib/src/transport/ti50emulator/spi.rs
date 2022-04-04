@@ -9,6 +9,8 @@ use crate::util::voltage::Voltage;
 
 pub struct Ti50Spi {}
 
+// FIXME: remove 'dead_code' after implementing SPI
+#[allow(dead_code)]
 impl Ti50Spi {
     pub fn open(_emulator: &Ti50Emulator, _instance: &str) -> Result<Self> {
         Err(TransportError::UnsupportedOperation.into())

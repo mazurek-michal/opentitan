@@ -10,6 +10,8 @@ use crate::transport::{Result, TransportError};
 
 pub struct Ti50Uart {}
 
+// FIXME: remove 'dead_code' after implementing UART
+#[allow(dead_code)]
 impl Ti50Uart {
     pub fn open(_emulator: &Ti50Emulator, _instance: &str) -> Result<Self> {
         Err(TransportError::UnsupportedOperation.into())
