@@ -8,5 +8,5 @@ MEMORY {
   RAM   (W) : ORIGIN = 0x10004400, LENGTH = 512K
 }
 
-TBF_HEADER_SIZE = 0x40;
+TBF_HEADER_SIZE = 0x44;
 INCLUDE sw/device/silicon_owner/tock/apps/diagnostic/libtock_layout.ld

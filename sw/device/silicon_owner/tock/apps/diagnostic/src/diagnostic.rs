@@ -8,7 +8,7 @@ use libtock2::console::Console;
 use libtock2::runtime::{set_main, stack_size};
 
 set_main! {main}
-stack_size! {0x200}
+stack_size! {0x100}
 
 fn main() {
     writeln!(Console::writer(), "Diagnostic console!").unwrap();
