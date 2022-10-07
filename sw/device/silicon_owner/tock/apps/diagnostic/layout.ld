@@ -9,4 +9,4 @@ MEMORY {
 }
 
 TBF_HEADER_SIZE = 0x40;
-INCLUDE sw/device/silicon_owner/tock/apps/hello/libtock_layout.ld
+INCLUDE sw/device/silicon_owner/tock/apps/diagnostic/libtock_layout.ld

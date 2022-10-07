@@ -8,7 +8,6 @@ load("//rules:tock.bzl", "tock_elf2tab")
 
 package(default_visibility = ["//visibility:public"])
 
-
 ld_library(
     name = "libtock_layout",
     includes = [

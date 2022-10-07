@@ -11,3 +11,9 @@ tock_image(
     kernel = "//sw/device/silicon_owner/tock/kernel",
     app = "//sw/device/silicon_owner/tock/apps/hello",
 )
+
+tock_image(
+    name = "test_image",
+    kernel = "//sw/device/silicon_owner/tock/kernel",
+    app = "//sw/device/silicon_owner/tock/apps/diagnostic"
+)
