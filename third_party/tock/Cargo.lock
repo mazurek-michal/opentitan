@@ -58,7 +58,7 @@ checksum = "0fc10e8cc6b2580fda3f36eb6dc5316657f812a3df879a44a66fc9f0fdbc4855"
 [[package]]
 name = "capsules-core"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "enum_primitive",
  "kernel",
@@ -68,7 +68,7 @@ dependencies = [
 [[package]]
 name = "capsules-extra"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "capsules-core",
  "enum_primitive",
@@ -131,7 +131,7 @@ dependencies = [
 [[package]]
 name = "components"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "capsules-core",
  "capsules-extra",
@@ -147,7 +147,7 @@ checksum = "e496a50fda8aacccc86d7529e2c1e0892dbd0f898a6b5645b5561b89c3210efa"
 [[package]]
 name = "earlgrey"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "kernel",
  "lowrisc",
@@ -157,7 +157,7 @@ dependencies = [
 [[package]]
 name = "earlgrey-cw310"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "capsules-core",
  "capsules-extra",
@@ -192,7 +192,7 @@ dependencies = [
 [[package]]
 name = "enum_primitive"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 
 [[package]]
 name = "filetime"
@@ -259,7 +259,7 @@ dependencies = [
 [[package]]
 name = "kernel"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "tock-cells",
  "tock-registers",
@@ -457,7 +457,7 @@ dependencies = [
 [[package]]
 name = "lowrisc"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "kernel",
  "rv32i",
@@ -542,7 +542,7 @@ dependencies = [
 [[package]]
 name = "riscv"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "kernel",
  "riscv-csr",
@@ -552,7 +552,7 @@ dependencies = [
 [[package]]
 name = "riscv-csr"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "tock-registers",
 ]
@@ -560,7 +560,7 @@ dependencies = [
 [[package]]
 name = "rv32i"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 dependencies = [
  "kernel",
  "riscv",
@@ -643,7 +643,7 @@ dependencies = [
 [[package]]
 name = "tickv"
 version = "1.0.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 
 [[package]]
 name = "time"
@@ -659,17 +659,17 @@ dependencies = [
 [[package]]
 name = "tock-cells"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 
 [[package]]
 name = "tock-registers"
 version = "0.8.1"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 
 [[package]]
 name = "tock-tbf"
 version = "0.1.0"
-source = "git+https://github.com/cfrantz/tock?branch=ot-master-rework#3a4a8b64c3383fa42c38c246d466043ffa1265f0"
+source = "git+https://github.com/semihalf-mazurek-michal/tock?branch=ot-master-rework2#709ef6711097111409141daa5bde959021b2163e"
 
 [[package]]
 name = "unicode-ident"
