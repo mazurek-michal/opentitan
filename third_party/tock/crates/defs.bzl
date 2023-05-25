@@ -460,7 +460,7 @@ def crate_repositories():
         name = "tock_index__capsules-core-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.capsules-core-0.1.0.bazel"),
         strip_prefix = "capsules/core",
     )
@@ -470,7 +470,7 @@ def crate_repositories():
         name = "tock_index__capsules-extra-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.capsules-extra-0.1.0.bazel"),
         strip_prefix = "capsules/extra",
     )
@@ -520,7 +520,7 @@ def crate_repositories():
         name = "tock_index__components-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.components-0.1.0.bazel"),
         strip_prefix = "boards/components",
     )
@@ -540,7 +540,7 @@ def crate_repositories():
         name = "tock_index__earlgrey-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.earlgrey-0.1.0.bazel"),
         strip_prefix = "chips/earlgrey",
     )
@@ -550,7 +550,7 @@ def crate_repositories():
         name = "tock_index__earlgrey-cw310-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.earlgrey-cw310-0.1.0.bazel"),
         strip_prefix = "boards/opentitan/earlgrey-cw310",
     )
@@ -579,7 +579,7 @@ def crate_repositories():
         name = "tock_index__enum_primitive-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.enum_primitive-0.1.0.bazel"),
         strip_prefix = "libraries/enum_primitive",
     )
@@ -649,7 +649,7 @@ def crate_repositories():
         name = "tock_index__kernel-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.kernel-0.1.0.bazel"),
         strip_prefix = "kernel",
     )
@@ -878,7 +878,7 @@ def crate_repositories():
         name = "tock_index__lowrisc-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.lowrisc-0.1.0.bazel"),
         strip_prefix = "chips/lowrisc",
     )
@@ -968,7 +968,7 @@ def crate_repositories():
         name = "tock_index__riscv-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.riscv-0.1.0.bazel"),
         strip_prefix = "arch/riscv",
     )
@@ -978,7 +978,7 @@ def crate_repositories():
         name = "tock_index__riscv-csr-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.riscv-csr-0.1.0.bazel"),
         strip_prefix = "libraries/riscv-csr",
     )
@@ -988,7 +988,7 @@ def crate_repositories():
         name = "tock_index__rv32i-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.rv32i-0.1.0.bazel"),
         strip_prefix = "arch/rv32i",
     )
@@ -1068,7 +1068,7 @@ def crate_repositories():
         name = "tock_index__tickv-1.0.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.tickv-1.0.0.bazel"),
         strip_prefix = "libraries/tickv",
     )
@@ -1088,7 +1088,7 @@ def crate_repositories():
         name = "tock_index__tock-cells-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.tock-cells-0.1.0.bazel"),
         strip_prefix = "libraries/tock-cells",
     )
@@ -1098,7 +1098,7 @@ def crate_repositories():
         name = "tock_index__tock-registers-0.8.1",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.tock-registers-0.8.1.bazel"),
         strip_prefix = "libraries/tock-register-interface",
     )
@@ -1108,7 +1108,7 @@ def crate_repositories():
         name = "tock_index__tock-tbf-0.1.0",
         branch = "ot-master-rework",
         init_submodules = True,
-        remote = "https://github.com/cfrantz/tock",
+        remote = "https://github.com/semihalf-mazurek-michal/tock",
         build_file = Label("@lowrisc_opentitan//third_party/tock/crates:BUILD.tock-tbf-0.1.0.bazel"),
         strip_prefix = "libraries/tock-tbf",
     )

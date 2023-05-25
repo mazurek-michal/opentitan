@@ -16,8 +16,8 @@ path = "empty_file_to_appease_cargo.rs"
 # TODO(cfrantz): We don't want to use `git` references in our codebase because they
 # prevent offline builds.  Currently, it doesn't seem like rules_rust/crate_universe
 # supports specifying a https URL as a replacement for a git repo reference.  Investigate.
-earlgrey-cw310 = { git = "https://github.com/cfrantz/tock", branch="ot-master-rework", default-features=false }
-kernel = { git = "https://github.com/cfrantz/tock", branch="ot-master-rework" }
+earlgrey-cw310 = { git ="https://github.com/semihalf-mazurek-michal/tock", branch="ot-master-rework", default-features=false }
+kernel = { git = "https://github.com/semihalf-mazurek-michal/tock", branch="ot-master-rework" }
 
 # TODO(cfrantz): libtock-rs has a git submodule dependency on tock, but it isn't
 # necessary to compile libtock-rs (it's only used for tests).  crate_universe
