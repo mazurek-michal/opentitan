@@ -26,7 +26,8 @@ ld_library(
 rust_binary(
     name = "hello_elf",
     srcs = [
-        "src/hello.rs",
+        "src/main.rs",
+        "src/console.rs",
     ],
     deps = [
         ":layout",
