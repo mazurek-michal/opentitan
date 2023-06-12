@@ -29,6 +29,7 @@ SECTIONS {
         . = . + 384; /* modulus */
         . = . + 4;   /* address_translation */
         . = . + 4;   /* identifier */
+        . = . + 4;   /* manifest_version */
         . = . + 4;   /* signed_region_end */
         . = . + 4;   /* length */
         . = . + 4;   /* version_major */
