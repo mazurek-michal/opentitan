@@ -99,3 +99,10 @@ pest_derive = "2.2"
 
 # documentation generation tools
 mdbook = "0.4.28"
+
+# TODO(cfrantz): Currently, elf2tab miscomputes the apps entry point by the
+# size of the TBF header.  My private fork of elf2tab adjusts the start
+# address to the correct entry point.
+#elf2tab = "0.10"
+elf2tab = { git = "https://github.com/cfrantz/elf2tab", branch="libify" }
+libm = "0.2.7"

@@ -116,6 +116,12 @@ alias(
 )
 
 alias(
+    name = "elf2tab",
+    actual = "@crate_index__elf2tab-0.10.0-dev//:elf2tab",
+    tags = ["manual"],
+)
+
+alias(
     name = "elliptic-curve",
     actual = "@crate_index__elliptic-curve-0.13.4//:elliptic_curve",
     tags = ["manual"],
@@ -172,6 +178,12 @@ alias(
 alias(
     name = "libftdi1-sys",
     actual = "@crate_index__libftdi1-sys-1.1.2//:libftdi1_sys",
+    tags = ["manual"],
+)
+
+alias(
+    name = "libm",
+    actual = "@crate_index__libm-0.2.7//:libm",
     tags = ["manual"],
 )
 
@@ -416,6 +428,12 @@ alias(
 )
 
 # Binaries
+alias(
+    name = "elf2tab__elf2tab",
+    actual = "@crate_index__elf2tab-0.10.0-dev//:elf2tab__bin",
+    tags = ["manual"],
+)
+
 alias(
     name = "mdbook__mdbook",
     actual = "@crate_index__mdbook-0.4.28//:mdbook__bin",

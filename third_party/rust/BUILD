@@ -15,6 +15,9 @@ crates_vendor(
             patch_args = ["-p1"],
             patches = ["@//third_party/rust/patches:mdbook-landing-page-links.patch"],
         )],
+        "elf2tab": [crate.annotation(
+            gen_binaries = True,
+        )],
         "cryptoki": [crate.annotation(
             patch_args = ["-p2"],
             patches = ["@//third_party/rust/patches:cryptoki-vendor-defined-mechanism-type.patch"],
