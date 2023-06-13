@@ -4,13 +4,14 @@
 #![no_main]
 #![no_std]
 use core::fmt::Write;
-use libtock::alarm::{Alarm, Milliseconds};
 use libtock::console::Console;
-use libtock::platform::ErrorCode;
 use libtock::runtime::{set_main, stack_size};
 
 pub mod console;
-use crate::console::{DebugConsole, ConsoleCommand, CommandToken};
+pub mod memory_cmd;
+
+use crate::console::{ConsoleCommand, ConsoleError, DebugConsole};
+use crate::memory_cmd::mem_cmd;
 
 set_main!(main);
 stack_size!(0x400);
@@ -25,19 +26,28 @@ const HELLO_PROMPT: &'static str = "\r
   +---------+\r
     | | | |\r";
 
-pub fn hello(line: &[u8], args: &[CommandToken]) -> Result<(), ErrorCode>{
+const HELLO_CMD_HELP: &'static str = "Write hello prompt";
+
+pub fn hello(_args: &[&str]) -> Result<(), ConsoleError> {
     write!(Console::writer(), "{}\r\n", &HELLO_PROMPT).unwrap();
     Ok(())
 }
 
 const CONSOLE_BUFFER_SIZE: usize = 128;
 
-
-
 fn main() {
-    hello(b"", &[]);
-    let mut dc = DebugConsole::new(&[ConsoleCommand {name: "hello", exec: hello} ]);
-    let mut line_buffer: [u8;CONSOLE_BUFFER_SIZE] = [0;CONSOLE_BUFFER_SIZE];
+    hello(&[]);
+    let mut dc = DebugConsole::new(&[
+        ConsoleCommand {
+            name: "hello",
+            exec: hello,
+        },
+        ConsoleCommand {
+            name: "mem",
+            exec: mem_cmd,
+        },
+    ]);
+    let mut line_buffer: [u8; CONSOLE_BUFFER_SIZE] = [0; CONSOLE_BUFFER_SIZE];
     loop {
         dc.print_prompt();
         let ret = dc.read_line(&mut line_buffer);
@@ -47,7 +57,6 @@ fn main() {
             }
             Err(_err) => {
                 write!(Console::writer(), "{}\r\n", &HELLO_PROMPT).unwrap();
-                //TODO write error to low lewel debug or panic
             }
         }
     }

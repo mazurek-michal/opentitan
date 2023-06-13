@@ -28,6 +28,7 @@ rust_binary(
     srcs = [
         "src/main.rs",
         "src/console.rs",
+        "src/memory_cmd.rs"
     ],
     deps = [
         ":layout",
