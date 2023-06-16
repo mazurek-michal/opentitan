@@ -9,50 +9,27 @@ const DEBUG_CONSOLE_BUFFER_SIZE: usize = 128;
 
 pub struct ConsoleCommand<'a> {
     pub name: &'a str,
-    pub exec: fn(line: &[u8], args: &[CommandToken]) -> Result<(), ErrorCode>,
+    pub exec: fn(args: &[&str]) -> Result<(), ConsoleError>,
 }
 
-#[derive(Copy, Clone)]
-pub struct CommandToken {
-    position: usize,
-    length: usize,
+pub enum ConsoleError {
+    InvalidArgNumber,
+    InvalidValue,
+    InvalidSubcomand,
+    Sys(ErrorCode)
 }
 
-impl CommandToken {
-    pub fn new(pos: usize, len: usize) -> Self {
-        Self {
-            position: pos,
-            length: len,
-        }
+pub fn parse_number<'a>(token: &str) -> Option<usize> {
+    let mut radix: u32 = 10;
+    let mut num = token;
+    if token.starts_with("0x") {
+        radix = 16;
+        num = &token[2..];
     }
-
-    pub fn get_str<'a>(&self, buffer: &'a [u8]) -> Option<&'a str> {
-        let lower: usize = self.position;
-        let upper: usize = self.position + self.length;
-        if upper <= buffer.len() {
-            return match core::str::from_utf8(&buffer[lower..upper]) {
-                Err(_) => None,
-                Ok(s) => Some(s),
-            };
-        }
-        None
-    }
-
-    pub fn get_usize<'a>(&self, buffer: &'a [u8]) -> Option<usize> {
-        if let Some(text) = self.get_str(buffer) {
-            let mut radix: u32 = 10;
-            let mut num = text;
-            if text.starts_with("0x") {
-                radix = 16;
-                num = &text[2..];
-            }
-            return match usize::from_str_radix(&num, radix) {
-                Ok(val) => Some(val),
-                _ => None,
-            };
-        }
-        None
-    }
+    return match usize::from_str_radix(&num, radix) {
+        Ok(val) => Some(val),
+        _ => None,
+    };
 }
 
 pub fn is_whitespace(byte: u8) -> bool {
@@ -154,35 +131,41 @@ impl<'cmd> DebugConsole<'cmd> {
     // parse line in place to tokens
     pub fn parse_cmd<'a>(
         line: &'a [u8],
-        token_buffer: &'a mut [CommandToken],
-    ) -> &'a [CommandToken] {
+        token_buffer: &'a mut [&'a str],
+    ) -> &'a [&'a str] {
         let mut index: usize = 0;
         let mut token_counter: usize = 0;
         let mut old: u8 = b' ';
         let mut new: u8 = b' ';
+        let mut start: usize = 0;
+        let mut len: usize = 0;
         while index < line.len() && token_counter < token_buffer.len() {
             old = new;
             new = line[index];
             //TODO change for match expression ?
             if is_whitespace(old) && !is_whitespace(new) {
                 // token start
-                token_buffer[token_counter].position = index;
-                token_buffer[token_counter].length = 1;
+                start = index;
+                len = 1;
             }
             if !is_whitespace(old) && !is_whitespace(new) {
                 // token body
-                token_buffer[token_counter].length += 1;
+                len += 1;
             }
             if !is_whitespace(old) && is_whitespace(new) {
                 // token end
+                unsafe {
+                    token_buffer[token_counter] = core::str::from_utf8_unchecked(&line[start..start+len]);
+                }
                 token_counter += 1;
                 // prepare new toke to be filled
-                token_buffer[token_counter].position = 0;
-                token_buffer[token_counter].length = 0;
+                start = 0;
+                len = 0;
             }
             index += 1;
         }
-        if token_buffer[token_counter].length > 0 {
+        if len > 0 {
+            unsafe { token_buffer[token_counter] = core::str::from_utf8_unchecked(&line[start..start+len]); };
             token_counter += 1;
         }
         return &token_buffer[0..token_counter];
@@ -190,16 +173,34 @@ impl<'cmd> DebugConsole<'cmd> {
 
     pub fn execute_cmd(&self, line: &[u8]) -> Result<(), ErrorCode> {
         if line.len() > 0 {
-            //write!(Console::writer(), "\n\rcmd:{}\r\n", line.len()).unwrap();
-            let mut token_buffer: [CommandToken; 16] = [CommandToken::new(0, 0); 16];
+            let mut token_buffer: [&str; 16] = [""; 16];
             let args = Self::parse_cmd(&line, &mut token_buffer);
-            if let Some(command_name) = args[0].get_str(&line) {
+            if args.len() > 0 {
+                write!(Console::writer(), "\n\rcmd:{:?}\r\n", &args).unwrap();
                 for command in self.command_table {
-                    if command.name == command_name {
-                        return (command.exec)(&line, &args);
+                    if args[0] == command.name {
+                        return match ((command.exec)(&args)) {
+                            Err(ConsoleError::InvalidArgNumber) => {
+                                write!(Console::writer(), "Invalid Number of args\n").unwrap();
+                                Ok(())
+                            },
+                            Err(ConsoleError::InvalidValue) => {
+                                write!(Console::writer(), "Invalid value\n").unwrap();
+                                Ok(())
+                            },
+                            Err(ConsoleError::InvalidSubcomand) => {
+                                write!(Console::writer(), "Invalid subcomand\n").unwrap();
+                                Ok(())
+                            },
+                            Err(ConsoleError::Sys(err)) => {
+                                write!(Console::writer(), "Syscal error: {}\n", err as usize).unwrap();
+                                Err(err)
+                            },
+                            Ok(_) => Ok(()),
+                        }
                     }
                 }
-                write!(Console::writer(), "Unknown command!!!:{}\n", command_name).unwrap();
+                write!(Console::writer(), "Unknown command!!!:{}\n", args[0]).unwrap();
             }
         }
         Ok(())
