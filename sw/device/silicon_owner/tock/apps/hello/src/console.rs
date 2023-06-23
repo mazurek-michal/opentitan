@@ -43,6 +43,59 @@ pub struct DebugConsole<'cmd> {
     command_table: &'cmd [ConsoleCommand<'cmd>],
 }
 
+enum EscapeSequenceCommand {
+    Up,     // <esc>[A
+    Down,   // <esc>[B
+    Right   // <esc>[C
+    Left,   // <esc>[D
+    Home,   // <esc>[1~
+    Insert, // <esc>[2~
+    Delete, // <esc>[3~
+    End,    // <esc>[4~
+    PgUp,   // <esc>[5~
+    PgDown, // <esc>[6~
+    Home,   // <esc>[7~
+    End,    // <esc>[8~
+}
+
+const ESC_SEQ_START: u8 = b'\x1B'; // ESC - start escape sequence
+
+enum EscapeSequenceState {
+    None,
+    Start,
+    Bracket,
+    Number(u8),
+    Command(EscapeSequenceCommand),
+    Unsupported,
+}
+
+impl EscapeSequenceCommand {
+    fn process_byte(self, data: u8) -> Self {
+        use self::{EscapeSequenceCommand::*, EscapeSequenceState::*};
+        match (self, data) {
+            (None, ESC_SEQ_START)
+            | (Unsupported, ESC_SEQ_START)
+            | (Command(_), ESC_SEQ_START) => Start,
+            (None, _) | (Unsupported, _) (Command(_), _) => None,
+            (start, b'[') => Bracket,
+            (Bracket, b'A') => Command(Up),
+            (Bracket, b'B') => Command(Down),
+            (Bracket, b'C') => Command(Right),
+            (Bracket, b'D') => Command(Left),
+            (Bracket, n @ b'0'..=b'9') => Number(n),
+            (Number(1), b'~') => Command(Home),
+            (Number(2), b'~') => Command(Insert),
+            (Number(3), b'~') => Command(Delete),
+            (Number(4), b'~') => Command(End),
+            (Number(5), b'~') => Command(PgUp),
+            (Number(6), b'~') => Command(PgDown),
+            (Number(7), b'~') => Command(Home),
+            (Number(8), b'~') => Command(End),
+            _ => Unsupported
+        }
+    }
+}
+
 impl<'cmd> DebugConsole<'cmd> {
     const PROMPT_TEXT: &'static str = "\r\nOTDC:>";
     const CR: u8 = b'\r'; // carige return
