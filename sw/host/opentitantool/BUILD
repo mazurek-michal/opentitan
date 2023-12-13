@@ -45,6 +45,7 @@ rust_binary(
     rustc_env_files = [
         "stamp-env.txt",
     ],
+    rustc_flags = ["-g"],
     # stamping is necessary because opentitantool builds version.rs that needs it
     stamp = 1,
     deps = [
