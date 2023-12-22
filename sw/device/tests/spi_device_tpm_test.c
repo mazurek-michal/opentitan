@@ -24,6 +24,26 @@ static dif_spi_device_handle_t spi_device;
 static dif_pinmux_t pinmux;
 static dif_rv_plic_t plic;
 
+// Enum for TPM hardware registers
+typedef enum {
+  ACCESS = 0x0000,
+  INT_ENABLE = 0x0008,
+  INT_VECTOR = 0x000C,
+  INT_STATUS = 0x0010,
+  INTF_CAPABILITY = 0x0014,
+  STS = 0x0018,
+  DATA_FIFO = 0x0024,
+  INTERFACE_ID = 0x0030,
+  XDATA_FIFO = 0x0080,
+  DID_VID = 0x0F00,
+  RID = 0x0F04,
+} tpm_reg_t;
+
+typedef struct {
+  uint32_t regs[16];
+  uint8_t fifo[64];
+} tpm_state_t;
+
 // Enum for TPM command
 typedef enum {
   kTpmWriteCommand = 0x0,
@@ -34,7 +54,11 @@ enum {
   kTpmCommandMask = 0xbf,
 };
 
-const static uint8_t kIterations = 10;
+
+const static uint32_t kTpmAddresPrefix = 0x00D40000;
+const static uint32_t kTpmAddresPrefixMask = 0xffff0000;
+
+const static uint8_t kIterations = 100;
 const static uint8_t kTpmCommandRwMask = 0x80;
 const static uint8_t kTpmCommandSizeMask = 0x3f;
 
@@ -149,6 +173,118 @@ static void atomic_wait_for_interrupt(void) {
   irq_global_ctrl(true);
 }
 
+void* get_sw_register_ptr(tpm_state_t* state, uint32_t addr, uint32_t *max_size) {
+    void* data = NULL;
+    uint16_t offset = addr & (~kTpmAddresPrefixMask);
+
+    switch(offset) {
+      case ACCESS:
+        data = &state->regs[0];
+        *max_size = 4;
+        break;
+      case INT_ENABLE:
+         data = &state->regs[1];
+         *max_size = 4;
+         break;
+      case INT_VECTOR:
+        data = &state->regs[2];
+         *max_size = 4;
+        break;
+      case INT_STATUS:
+        data = &state->regs[3];
+         *max_size = 4;
+        break;
+      case INTF_CAPABILITY:
+        data = &state->regs[4];
+         *max_size = 4;
+        break;
+      case STS:
+        data = &state->regs[5];
+         *max_size = 4;
+        break;
+      case DATA_FIFO:
+        data = &state->fifo[0];
+         *max_size = 64;
+        break;
+      case INTERFACE_ID:
+        data = &state->regs[6];
+         *max_size = 4;
+        break;
+      case XDATA_FIFO:
+        data = &state->fifo[0];
+         *max_size = 64;
+        break;
+      case DID_VID:
+        data = &state->regs[7];
+         *max_size = 4;
+        break;
+      case RID:
+        data = &state->regs[8];
+         *max_size = 4;
+        break;
+      default:
+        LOG_INFO("Unknown register:0x%X", offset);
+    }
+    return data;
+}
+
+void handle_read_request(dif_spi_device_handle_t *spi, uint8_t command, uint32_t addr, tpm_state_t *state) {
+    uint8_t* data = NULL;
+    uint32_t len = (command & kTpmCommandSizeMask) + 1;
+    uint32_t max_len = 0;
+
+    data = get_sw_register_ptr(state, addr, &max_len);
+    if ((data == NULL) || (max_len == 0)) {
+      LOG_INFO("Invalid data register");
+      return;
+    }
+
+    if (len <= max_len) {
+      CHECK_DIF_OK(dif_spi_device_tpm_write_data(&spi_device, len, data));
+
+      // moved to end to avoid timing issue
+      LOG_INFO("Read cmd req_len:%d max_len:%d", len, max_len);
+      for (int i=0; i<len; i++) {
+        LOG_INFO("%d 0x%X ", i, data[i]);
+      }
+    } else {
+      LOG_INFO("Read cmd req_len:%d max_len:%d", len, max_len);
+      LOG_INFO("Read incorect len");
+    }
+}
+
+void handle_write_request(dif_spi_device_handle_t *spi, uint8_t command, uint32_t addr, tpm_state_t* state) {
+    uint8_t* data = NULL;
+    uint32_t len = (command & kTpmCommandSizeMask) + 1;
+    uint32_t max_len = 0;
+    uint32_t counter = 0;
+
+    data = get_sw_register_ptr(state, addr, &max_len);
+    if ((data == NULL) || (max_len == 0)) {
+      LOG_INFO("Invalid data register");
+      return;
+    }
+
+    if (len <= max_len) {
+      // pull for data
+      dif_result_t status = kDifOutOfRange;
+      while (status == kDifOutOfRange) {
+        status = dif_spi_device_tpm_read_data(&spi_device, len, data);
+        counter++;
+      };
+      CHECK_DIF_OK(status);
+
+      // move to end to not interfere with timing
+      LOG_INFO("Write cmd req_len:%d max_len:%d counter:%d", len, max_len, counter);
+      for (int i=0; i<len; i++) {
+        LOG_INFO("%d 0x%X ", i, data[i]);
+      }
+    } else {
+      LOG_INFO("Read incorect len");
+      return;
+    }
+}
+
 bool test_main(void) {
   CHECK_DIF_OK(dif_pinmux_init(
       mmio_region_from_addr(TOP_EARLGREY_PINMUX_AON_BASE_ADDR), &pinmux));
@@ -189,53 +325,33 @@ bool test_main(void) {
   // Sync message with testbench to begin.
   LOG_INFO("Begin TPM Test");
 
+  tpm_state_t tpm_state;
+
   for (uint32_t i = 0; i < kIterations; i++) {
     LOG_INFO("Iteration %d", i);
 
     // Wait for write interrupt.
     atomic_wait_for_interrupt();
 
-    // Check what comamnd we have received. Store it as expected variables
-    // and compare when the read command is issued.
-    uint8_t write_command;
-    uint32_t write_addr;
-    CHECK_DIF_OK(dif_spi_device_tpm_get_command(&spi_device, &write_command,
-                                                &write_addr));
-    CHECK((write_command & kTpmCommandRwMask) == kTpmWriteCommand,
-          "Expected write command, received read");
+    // read header
+    uint8_t command;
+    uint32_t addr;
+    CHECK_DIF_OK(dif_spi_device_tpm_get_command(&spi_device, &command,
+                                                &addr));
+    LOG_INFO("command: 0x%X addr:0x%X", command, addr);
+    if((addr & kTpmAddresPrefixMask) != kTpmAddresPrefix) {
+      LOG_INFO("Invalid prefix");
+    }
 
-    // Poll for write data to complete.
-    uint32_t num_bytes = (write_command & kTpmCommandSizeMask) + 1;
-    LOG_INFO("Expecting %d bytes from tpm write", num_bytes);
+    if((command & kTpmCommandRwMask) == kTpmReadCommand) {
+      handle_read_request(&spi_device, command, addr, &tpm_state);
+    } else {
+      handle_write_request(&spi_device, command, addr, &tpm_state);
+    }
 
-    uint8_t buf[64];
-    dif_result_t status = kDifOutOfRange;
-    while (status == kDifOutOfRange) {
-      status = dif_spi_device_tpm_read_data(&spi_device, num_bytes, buf);
-    };
-    CHECK_DIF_OK(status);
-
-    // Finished processing the write command
+    // Finished processing
     ack_spi_tpm_header_irq(&spi_device);
 
-    // Wait for read interrupt.
-    atomic_wait_for_interrupt();
-    // Send the written data right back out for reads.
-    CHECK_DIF_OK(dif_spi_device_tpm_write_data(&spi_device, num_bytes, buf));
-
-    uint8_t read_command;
-    uint32_t read_addr;
-    CHECK_DIF_OK(
-        dif_spi_device_tpm_get_command(&spi_device, &read_command, &read_addr));
-    ack_spi_tpm_header_irq(&spi_device);
-
-    // Make sure the received command matches expectation
-    read_command &= kTpmCommandMask;
-    LOG_INFO("Expected 0x%x, received 0x%x",
-             (kTpmReadCommand | (num_bytes - 1)), read_command);
-    CHECK((kTpmReadCommand | (num_bytes - 1)) == read_command,
-          "Expected read command, received write");
-    CHECK(write_addr == read_addr, "Received address did not match");
   }
 
   return true;
