@@ -338,7 +338,6 @@ bool test_main(void) {
     uint32_t addr;
     CHECK_DIF_OK(dif_spi_device_tpm_get_command(&spi_device, &command,
                                                 &addr));
-    LOG_INFO("command: 0x%X addr:0x%X", command, addr);
     if((addr & kTpmAddresPrefixMask) != kTpmAddresPrefix) {
       LOG_INFO("Invalid prefix");
     }
@@ -351,6 +350,8 @@ bool test_main(void) {
 
     // Finished processing
     ack_spi_tpm_header_irq(&spi_device);
+
+    LOG_INFO("Ack command: 0x%X addr:0x%X", command, addr);
 
   }
 
