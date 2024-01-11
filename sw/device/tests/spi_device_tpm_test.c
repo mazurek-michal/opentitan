@@ -37,11 +37,13 @@ typedef enum {
   XDATA_FIFO = 0x0080,
   DID_VID = 0x0F00,
   RID = 0x0F04,
+  TEST_DELAY = 0xFFFF, // programable delay in 1k cycle
 } tpm_reg_t;
 
 typedef struct {
   uint32_t regs[16];
   uint8_t fifo[64];
+  uint32_t delay;
 } tpm_state_t;
 
 // Enum for TPM command
@@ -228,6 +230,31 @@ void* get_sw_register_ptr(tpm_state_t* state, uint32_t addr, uint32_t *max_size)
     return data;
 }
 
+// Yes it is dumb wait code.
+void programed_wait(tpm_state_t* state, uint32_t addr) {
+  uint16_t offset = addr & (~kTpmAddresPrefixMask);
+  if((state->delay > 0) && (offset != DATA_FIFO)) {
+    for(uint32_t i = 0 ; i <= state->delay; i++) {
+      // this should take aroun 20us for 24MHz clock
+      volatile uint32_t t = 0;
+      while(t < 24) { t++; }
+    }
+  }
+}
+
+void update_state(tpm_state_t* state) {
+  // read magic value form data fifo
+  uint32_t* pattern = (uint32_t*)&state->fifo[0];
+  uint32_t* value = (uint32_t*)&state->fifo[4];
+  LOG_INFO("pattern:%X value:%X", *pattern, *value);
+  if(*pattern == 0x01020304) {
+    state->delay = *value;
+    LOG_INFO("Set dealy value: %d", state->delay);
+    *value = 0;
+    *pattern = 0;
+  }
+}
+
 void handle_read_request(dif_spi_device_handle_t *spi, uint8_t command, uint32_t addr, tpm_state_t *state) {
     uint8_t* data = NULL;
     uint32_t len = (command & kTpmCommandSizeMask) + 1;
@@ -327,6 +354,9 @@ bool test_main(void) {
 
   tpm_state_t tpm_state;
 
+  // set miniumum value
+  tpm_state.delay = 0;
+
   for (uint32_t i = 0; i < kIterations; i++) {
     LOG_INFO("Iteration %d", i);
 
@@ -342,6 +372,8 @@ bool test_main(void) {
       LOG_INFO("Invalid prefix");
     }
 
+    programed_wait(&tpm_state, addr);
+
     if((command & kTpmCommandRwMask) == kTpmReadCommand) {
       handle_read_request(&spi_device, command, addr, &tpm_state);
     } else {
@@ -352,6 +384,7 @@ bool test_main(void) {
     ack_spi_tpm_header_irq(&spi_device);
 
     LOG_INFO("Ack command: 0x%X addr:0x%X", command, addr);
+    update_state(&tpm_state);
 
   }
 
