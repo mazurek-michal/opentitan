@@ -76,17 +76,6 @@ static void en_plic_irqs(dif_rv_plic_t *plic) {
   // Enable functional interrupts as well as error interrupts to make sure
   // everything is behaving as expected.
   top_earlgrey_plic_irq_id_t plic_irqs[] = {
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericRxFull,
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericRxWatermark,
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericTxWatermark,
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericRxError,
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericRxOverflow,
-      kTopEarlgreyPlicIrqIdSpiDeviceGenericTxUnderflow,
-      kTopEarlgreyPlicIrqIdSpiDeviceUploadCmdfifoNotEmpty,
-      kTopEarlgreyPlicIrqIdSpiDeviceUploadPayloadNotEmpty,
-      kTopEarlgreyPlicIrqIdSpiDeviceUploadPayloadOverflow,
-      kTopEarlgreyPlicIrqIdSpiDeviceReadbufWatermark,
-      kTopEarlgreyPlicIrqIdSpiDeviceReadbufFlip,
       kTopEarlgreyPlicIrqIdSpiDeviceTpmHeaderNotEmpty};
 
   for (uint32_t i = 0; i < ARRAYSIZE(plic_irqs); ++i) {
@@ -105,17 +94,6 @@ static void en_plic_irqs(dif_rv_plic_t *plic) {
 
 static void en_spi_device_irqs(dif_spi_device_t *spi_device) {
   dif_spi_device_irq_t spi_device_irqs[] = {
-      kDifSpiDeviceIrqGenericRxFull,
-      kDifSpiDeviceIrqGenericRxWatermark,
-      kDifSpiDeviceIrqGenericTxWatermark,
-      kDifSpiDeviceIrqGenericRxError,
-      kDifSpiDeviceIrqGenericRxOverflow,
-      kDifSpiDeviceIrqGenericTxUnderflow,
-      kDifSpiDeviceIrqUploadCmdfifoNotEmpty,
-      kDifSpiDeviceIrqUploadPayloadNotEmpty,
-      kDifSpiDeviceIrqUploadPayloadOverflow,
-      kDifSpiDeviceIrqReadbufWatermark,
-      kDifSpiDeviceIrqReadbufFlip,
       kDifSpiDeviceIrqTpmHeaderNotEmpty};
 
   for (uint32_t i = 0; i <= ARRAYSIZE(spi_device_irqs); ++i) {
