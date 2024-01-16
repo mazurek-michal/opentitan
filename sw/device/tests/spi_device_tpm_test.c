@@ -65,10 +65,18 @@ const static uint8_t kTpmCommandRwMask = 0x80;
 const static uint8_t kTpmCommandSizeMask = 0x3f;
 
 const static dif_spi_device_tpm_config_t tpm_config = {
-    .interface = kDifSpiDeviceTpmInterfaceCrb,
+    .interface = kDifSpiDeviceTpmInterfaceFifo,
     .disable_return_by_hardware = false,
     .disable_address_prefix_check = false,
     .disable_locality_check = false};
+
+const static dif_spi_device_tpm_id_t tpm_hw_id = {
+      /** The vendor ID found in the TPM_DID_VID register. */
+      .vendor_id=0x1234,
+      /** The device ID found in the TPM_DID_VID register. */
+      .device_id=0x1234,
+      /** The revision ID found in the TPM_RID register. */
+      .revision=0xee};
 
 static volatile bool header_interrupt_received = false;
 
@@ -208,6 +216,35 @@ void* get_sw_register_ptr(tpm_state_t* state, uint32_t addr, uint32_t *max_size)
     return data;
 }
 
+void setup_return_by_hw_regs(dif_spi_device_handle_t *spi) {
+    LOG_INFO("SETUP RETURN-BY-HW");
+
+    // set localtity value
+    CHECK_DIF_OK(dif_spi_device_tpm_set_access_reg(&spi_device, 0, 0));
+    CHECK_DIF_OK(dif_spi_device_tpm_set_access_reg(&spi_device, 1, 1));
+    CHECK_DIF_OK(dif_spi_device_tpm_set_access_reg(&spi_device, 2, 2));
+    CHECK_DIF_OK(dif_spi_device_tpm_set_access_reg(&spi_device, 3, 3));
+    CHECK_DIF_OK(dif_spi_device_tpm_set_access_reg(&spi_device, 4, 4));
+
+    // set STS reg
+    CHECK_DIF_OK(dif_spi_device_tpm_set_sts_reg(&spi_device, 0xa1b2c3d4));
+
+    // set INTF_CAPABILITY
+    CHECK_DIF_OK(dif_spi_device_tpm_set_intf_capability_reg(&spi_device, 0xa1b2c3d4));
+
+    // set INT_ENABLE reg
+    CHECK_DIF_OK(dif_spi_device_tpm_set_int_enable_reg(&spi_device, 0xb1b2b3b4));
+
+    // set INT_VECTOR
+    CHECK_DIF_OK(dif_spi_device_tpm_set_int_vector_reg(&spi_device, 0xa1b2c3d4));
+
+    // set INT_STATUS
+    CHECK_DIF_OK(dif_spi_device_tpm_set_int_status_reg(&spi_device, 0xa1b2c3d4));
+
+    // set RID/DID_VID
+    CHECK_DIF_OK(dif_spi_device_tpm_set_id(&spi_device, tpm_hw_id));
+}
+
 // Yes it is dumb wait code.
 void programed_wait(tpm_state_t* state, uint32_t addr) {
   uint16_t offset = addr & (~kTpmAddresPrefixMask);
@@ -290,6 +327,7 @@ void handle_write_request(dif_spi_device_handle_t *spi, uint8_t command, uint32_
     }
 }
 
+
 bool test_main(void) {
   CHECK_DIF_OK(dif_pinmux_init(
       mmio_region_from_addr(TOP_EARLGREY_PINMUX_AON_BASE_ADDR), &pinmux));
@@ -320,8 +358,13 @@ bool test_main(void) {
                                             &out_attr));
   }
 
+
   CHECK_DIF_OK(
       dif_spi_device_tpm_configure(&spi_device, kDifToggleEnabled, tpm_config));
+
+
+	// set havlue of register for CRB mode
+	setup_return_by_hw_regs(&spi_device);
 
   // enable interrupts
   en_plic_irqs(&plic);
