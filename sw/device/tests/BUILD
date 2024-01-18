@@ -3293,7 +3293,10 @@ opentitan_test(
 #        test_harness = "//sw/host/tests/chip/spi_tpm_tx_rx",
 #    ),
     exec_env = {
-        "//hw/top_earlgrey:fpga_cw310_sival": None,
+        "//hw/top_earlgrey:fpga_cw310_test_sival": None,
+        "//hw/top_earlgrey:fpga_cw310_sival_rom_ext": None,
+        "//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "//hw/top_earlgrey:fpga_hyper310_rom_ext": "cw310",
     },
     deps = [
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
